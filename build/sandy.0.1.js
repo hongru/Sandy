@@ -2722,7 +2722,7 @@ Sandy.SPHERICAL_HARMONICS = parseInt(4);
             this.skybox = new Sandy.Transform();
             this.skybox.renderer = new Sandy.BuiltinShaders.fetch("Skybox");
             this.skybox.renderer.uCubemap = cubemap;
-            this.skybox.geometry = Sandy.Primitive.Cube(1, 1, 1).flip();
+            this.skybox.geometry = Sandy.primitive.Cube(1, 1, 1).flip();
         }    
     
     }).methods({
@@ -3622,7 +3622,7 @@ Sandy.register('.loader', function () {
         this.engine = engine;
         this.fbo = new Sandy.FrameBuffer();
         
-        this.geometry = Sandy.Primitive.FullScreenQuad();
+        this.geometry = Sandy.primitive.FullScreenQuad();
         this.filter = null;
     }).methods({
         render : function() {
