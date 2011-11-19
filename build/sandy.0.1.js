@@ -2774,11 +2774,11 @@ Sandy.register('.loader', function () {
         
         var ambient = new Sandy.Transform();
         ambient.light = new Sandy.Light(Sandy.AMBIENT);
-        ambient.light.color = Sandy.Loader.fromObject(Sandy.Color, jscene.ambient);
+        ambient.light.color = Sandy.loader.fromObject(Sandy.Color, jscene.ambient);
         engine.scene.add(ambient);
         
         
-        engine.setClearColor( Sandy.Loader.fromObject(Sandy.Color, jscene.background) );
+        engine.setClearColor( Sandy.loader.fromObject(Sandy.Color, jscene.background) );
         
         for(var txs in jscene.textures) {
             var tx = new Sandy.Texture( jscene.path + jscene.textures[txs].file );
@@ -2787,10 +2787,10 @@ Sandy.register('.loader', function () {
         
         for(var ms in jscene.materials) {
             var m = jscene.materials[ms];
-            m = Sandy.Loader.fetchShader(m.type, m);
-            m.color = Sandy.Loader.fromObject(Sandy.Color, m.color);
-            if(m.textureTile) m.textureTile = Sandy.Loader.v2FromArray(m.textureTile);
-            if(m.textureOffset) m.textureOffset = Sandy.Loader.v2FromArray(m.textureOffset);
+            m = Sandy.loader.fetchShader(m.type, m);
+            m.color = Sandy.loader.fromObject(Sandy.Color, m.color);
+            if(m.textureTile) m.textureTile = Sandy.loader.v2FromArray(m.textureTile);
+            if(m.textureOffset) m.textureOffset = Sandy.loader.v2FromArray(m.textureOffset);
             
             if (m.colorTexture) {
                 m.colorTexture = jscene.textures[m.colorTexture];
@@ -2802,9 +2802,9 @@ Sandy.register('.loader', function () {
         
         for(var lgs in jscene.lights) {
             var lg = jscene.lights[lgs];
-            lg = Sandy.Loader.fromObject(Sandy.Light, lg);
-            lg.color = Sandy.Loader.fromObject(Sandy.Color, lg.color);
-            if(lg.direction) lg.direction = Sandy.Loader.v3FromArray(lg.direction);
+            lg = Sandy.loader.fromObject(Sandy.Light, lg);
+            lg.color = Sandy.loader.fromObject(Sandy.Color, lg.color);
+            if(lg.direction) lg.direction = Sandy.loader.v3FromArray(lg.direction);
             jscene.lights[lgs] = lg;
         }
         
@@ -2816,9 +2816,9 @@ Sandy.register('.loader', function () {
         
         for(var i = 0; i < jscene.transforms.length; i++) {
             var t = jscene.transforms[i];
-            t = Sandy.Loader.fromObject(Sandy.Transform, t);
-            t.position = Sandy.Loader.v3FromArray(t.position);
-            t.rotation = Sandy.Loader.v3FromArray(t.rotation);
+            t = Sandy.loader.fromObject(Sandy.Transform, t);
+            t.position = Sandy.loader.v3FromArray(t.position);
+            t.rotation = Sandy.loader.v3FromArray(t.rotation);
             
             if(t.renderer) t.renderer = jscene.materials[t.renderer];
             if(t.mesh) t.geometry = new Sandy.Mesh(jmeshes[t.mesh]);
