@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<script src="../../build/sandy.0.1.js"></script>
+<style>
+html,body {background: black; margin:0;font-family:Microsoft Yahei;}
+.ctrl {
+    position: absolute;
+    left: 20px;
+    top:20px;
+    color: #fff;
+}
+</style>
+<script>
+var engine, cube, light;
+var mx = 0, my = 0;
+
+window.onload = function() {
+
+    engine = new Sandy.Engine();  
+    engine.setClearColor(Sandy.Color.black);
+    engine.scene.ambient = new Sandy.Color(.5, .5, .5, 1);
+    
+    sun = new Sandy.Transform();
+    sun.light = new Sandy.Light(Sandy.HEMISPHERE); 
+    sun.light.color = new Sandy.Color(1, 1, 1, 1);
+    sun.position = new Sandy.V3(0, 10, 0);
+    
+    crMat = Sandy.builtinShaders.fetch("Phong");
+    crMat.color = new Sandy.Color(1, 1, 1, 1);
+    crMat.specularIntensity = 0.1;
+    crMat.shininess = 0.1;
+    crMat.colorTexture = new Sandy.Texture("models/crate256.jpg");
+    crMat.hasColorTexture = true;
+    //tr
+    cr = new Sandy.Transform();
+    cr.position.x = 0.1;
+    cr.position.z = 0.5;
+    Sandy.loader.loadJSON("models/can.js", function(j) {
+        cr.geometry = new Sandy.Mesh(j);
+    });
+    cr.renderer = crMat;
+
+    camera = new Sandy.Transform();
+    camera.camera = new Sandy.Camera();
+    camera.position.z = 4;
+    engine.camera = camera;
+
+    engine.scene.add(sun);
+    engine.scene.add(camera, cr);
+    
+    draw();
+    
+    window.addEventListener('mousemove', onMouseMove, false);
+}
+function onMouseMove(e) {
+    mx = ( e.clientX / window.innerWidth  ) * 2 - 1;
+    my = ( e.clientY / window.innerHeight ) * 2 - 1;
+}
+
+function draw() {
+    cr.rotation.x = my;
+    cr.rotation.y += mx/10;
+    
+    engine.render();
+    requestAnimationFrame(draw);
+}
+</script>
+
+</html>

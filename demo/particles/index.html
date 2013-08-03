@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<script src="../../build/sandy.0.1.js"></script>
+<style>
+html,body {background: black; margin:0;font-family:Microsoft Yahei;}
+.ctrl {
+    position: absolute;
+    left: 20px;
+    top:20px;
+    color: #fff;
+}
+</style>
+
+<script id="rain" type="x-shader">
+	//#include CommonFilterInclude
+	
+	//#vertex
+	attribute vec4 aParticle;
+	uniform sampler2D uTexture;	
+
+	varying vec4 vParticle;
+	varying float illum;
+
+	void main(void) {	
+		vec4 pt = aParticle;
+		
+		pt.y = pt.y - (uTime * (1.0 + pt.z) / 10.0);
+		pt.y = mod(pt.y, 1.0);
+		
+		vec2 p = vec2(pt.x * 2.0 - 1.0, pt.y * 2.0 - 1.0);
+		
+		vec4 c = texture2D(uTexture, pt.xy);
+		
+		p.x += (0.05 + c.r * 0.95) * 0.02 * sin(pt.w * uTime * 3.0);
+		p.y += c.r * 0.02;
+		
+		illum = c.r;
+		
+		gl_Position = vec4(p, 0.0, 1.0);
+		gl_PointSize = 2.0;
+		
+		vParticle = pt;
+	}
+	
+	//#fragment
+	varying vec4 vParticle;
+	varying float illum;
+
+	void main(void) {
+		float a = (0.2 + illum * 0.8) * sin(uTime * vParticle.w + vParticle.w);
+		gl_FragColor = vec4(a,a,a,  1.0);
+	}
+
+</script>
+
+
+<script>
+var engine, cube, light;
+var mx = 0, my = 0;
+
+window.onload = function() {
+
+    engine = new Sandy.Engine();  
+    engine.setClearColor(Sandy.Color.black);
+    engine.scene.ambient = new Sandy.Color(.5, .5, .5, 1);
+    
+    sun = new Sandy.Transform();
+    sun.light = new Sandy.Light(Sandy.HEMISPHERE); 
+    sun.light.color = new Sandy.Color(1, 1, 1, 1);
+    sun.position = new Sandy.V3(0, 100, 0);
+    
+    crMat = Sandy.builtinShaders.fetch("Phong");
+
+    
+    //tr
+    cr = new Sandy.Transform();
+    cr.position.x = 0.1;
+    cr.position.z = 0.5;
+    Sandy.loader.loadJSON("models/skull.js", function(j) {
+        cr.geometry = new Sandy.Mesh(j);
+    });
+    cr.renderer = crMat;
+    
+    post = new Sandy.Postprocess(engine);
+    post.drawMode = Sandy.gl.POINTS;
+    post.filter = new Sandy.shaderUtil.parseGLSL(document.getElementById("rain").firstChild.nodeValue);
+    var cd = [];
+    for(var i = 0; i < 50000; i++) {
+        cd.push(Math.random(), Math.random(), Math.random() * Math.PI, Math.random() * Math.PI);
+    }
+    post.geometry = new Sandy.Geometry();
+    post.geometry.addArray("aParticle", new Float32Array(cd), 4);
+
+
+    camera = new Sandy.Transform();
+    camera.camera = new Sandy.Camera();
+    camera.position.z = 5;
+    engine.camera = camera;
+
+    engine.scene.add(sun);
+    engine.scene.add(camera, cr);
+    
+    draw();
+    
+    window.addEventListener('mousemove', onMouseMove, false);
+}
+function onMouseMove(e) {
+    mx = ( e.clientX / window.innerWidth  ) * 2 - 1;
+    my = ( e.clientY / window.innerHeight ) * 2 - 1;
+}
+
+function draw() {
+    cr.rotation.x = my;
+    cr.rotation.y += mx/10;
+    
+    post.render();
+    requestAnimationFrame(draw);
+}
+</script>
+
+</html>

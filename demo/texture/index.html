@@ -3,7 +3,13 @@
 <meta charset="utf-8" />
 <script src="../../build/sandy.0.1.js"></script>
 <style>
-html,body {background: black; margin:0}
+html,body {background: black; margin:0;font-family:Microsoft Yahei;}
+.ctrl {
+    position: absolute;
+    left: 20px;
+    top:20px;
+    color: #fff;
+}
 </style>
 <script>
 var engine, cube, light;
@@ -13,14 +19,19 @@ window.onload = function() {
     engine = new Sandy.Engine();  
     engine.setClearColor(Sandy.Color.black);
     engine.scene.ambient = new Sandy.Color(.5, .5, .5, 1);
-
-    light = new Sandy.Transform();
-    light.light = new Sandy.Light(Sandy.DIRECT);
-    light.light.color = new Sandy.Color(1, 1, 1, 1);
-    light.light.direction = new Sandy.V3(1, 0, 1).norm();
+    
+    lightL = new Sandy.Transform();
+    lightL.light = new Sandy.Light(Sandy.DIRECT);
+    lightL.light.color = new Sandy.Color(1, 0, 0, 1);
+    lightL.light.direction = new Sandy.V3(1, 0, 0).norm();
+    
+    lightR = new Sandy.Transform();
+    lightR.light = new Sandy.Light(Sandy.DIRECT);
+    lightR.light.color = new Sandy.Color(0, 1, 0, 1);
+    lightR.light.direction = new Sandy.V3(-1, 0, 0).norm();
     
     sun = new Sandy.Transform();
-    sun.light = new Sandy.Light(Sandy.HEMISPHERE);
+    sun.light = new Sandy.Light(Sandy.HEMISPHERE); 
     sun.light.color = new Sandy.Color(1, 1, 1, 1);
     sun.position = new Sandy.V3(0, 1, 0);
     
@@ -44,10 +55,9 @@ window.onload = function() {
     camera.position.z = 4;
     engine.camera = camera;
 
-    //engine.scene.add(camera, cube, light);
-    engine.scene.add(sun);
-    engine.scene.add(camera, cr, light);
-
+    engine.scene.add(sun, lightL, lightR);
+    engine.scene.add(camera, cr);
+    
     draw();
 }
 
@@ -57,9 +67,19 @@ function draw() {
     cr.rotation.x += Math.PI * Sandy.time.deltaTime / 6000;
     cr.rotation.y += Math.PI * Sandy.time.deltaTime / 3000;
     
+    lightL.light.color = document.getElementById('lightL').checked ? new Sandy.Color(1, 0, 0, 1) : new Sandy.Color(0, 0, 0, 0);
+    lightR.light.color = document.getElementById('lightR').checked ? new Sandy.Color(0, 1, 0, 1) : new Sandy.Color(0, 0, 0, 0);
+    sun.light.color = document.getElementById('lightUp').checked ? new Sandy.Color(1, 1, 1, 1) : new Sandy.Color(0, 0, 0, 0);
+    
     engine.render();
     requestAnimationFrame(draw);
 }
 </script>
 
+
+<div class="ctrl">
+    <label for="lightL">左边光：</label><input type="checkbox" id="lightL" /><br/>
+    <label for="lightR">右边光：</label><input type="checkbox" id="lightR" /><br/>
+    <label for="lightUp">上边扇形光：</label><input type="checkbox" id="lightUp" checked />
+</div>
 </html>
